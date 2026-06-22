@@ -1,0 +1,35 @@
+{
+	"name": "@aobayos/react-reactive-forms",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Simple library to handle reactive forms for React apps, inspired by Angular Forms",
+	"license": "MIT",
+	"main": "./dist/index.umd.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/src/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.umd.cjs",
+			"types": "./dist/src/index.d.ts"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "vite build",
+		"dev": "vite build --watch",
+		"lint": "eslint src"
+	},
+	"peerDependencies": {
+		"react": ">=18.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "^19.2.14",
+		"@vitejs/plugin-react": "^6.0.1",
+		"typescript": "~6.0.2",
+		"vite": "^8.0.12",
+		"vite-plugin-dts": "^4.5.4"
+	}
+}
