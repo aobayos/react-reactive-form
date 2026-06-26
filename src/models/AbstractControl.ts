@@ -17,6 +17,7 @@ export abstract class AbstractControl<T = unknown> {
   protected _disabled = false;
   protected _validators: ValidatorFn<T>[];
   protected _asyncValidators: AsyncValidatorFn<T>[];
+  protected _asyncGeneration = 0;
   protected _listeners = new Set<Listener>();
   protected _parent: ControlParent | null = null;
 
@@ -189,9 +190,10 @@ export abstract class AbstractControl<T = unknown> {
   }
 
   protected _runAsyncValidators(): void {
+    const generation = ++this._asyncGeneration;
     const current = this._asyncValidators.map((v) => v(this));
     Promise.all(current).then((results) => {
-      if (this._status !== 'PENDING') return;
+      if (generation !== this._asyncGeneration) return;
       const errors: ValidationErrors = {};
       let hasError = false;
       for (const result of results) {
