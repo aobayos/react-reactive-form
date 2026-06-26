@@ -649,7 +649,7 @@ To show a custom error message, read `control.errors` directly instead of using 
 ```tsx
 {control.touched && control.hasError('maxWords') && (
   <span>
-    Too many words ({(control.getError('maxWords') as any).actual} / {max})
+    Too many words ({(control.getError('maxWords') as { actual: number }).actual} / {max})
   </span>
 )}
 ```
@@ -699,10 +699,12 @@ const form = useFormGroup({
 For custom cross-field validators, access the parent group the same way:
 
 ```ts
+import type { AbstractControlLike } from 'react-reactive-forms';
+
 const mustDiffer = (otherField: string): ValidatorFn => (control) => {
-  const group = control.parent;
+  const group = control.parent as unknown as { controls: Record<string, AbstractControlLike> } | null;
   if (!group) return null;
-  const other = (group as any).controls?.[otherField];
+  const other = group.controls?.[otherField];
   return control.value !== other?.value
     ? null
     : { mustDiffer: { field: otherField } };
