@@ -21,6 +21,7 @@ A React form management library inspired by Angular's Reactive Forms. Define you
   - [FieldError component](#fielderror-component)
   - [useFormContext](#useformcontext)
   - [useFormControl](#useformcontrol)
+  - [useControlValue](#usecontrolvalue)
   - [useFormArray](#useformarray)
 - [Custom Validators](#custom-validators)
 - [Async Validators](#async-validators)
@@ -569,6 +570,28 @@ function SearchInput() {
 
   // inputProps = { value, onChange, onBlur, disabled }
   return <input {...inputProps} />;
+}
+```
+
+**`useControlValue`** — subscribes to an existing control and returns its current value, re-rendering whenever it changes. Useful when you have a control from a `FormGroup` and only need to observe its value in a child component:
+
+```tsx
+import { useControlValue } from 'react-reactive-forms';
+
+function CharCount({ control }: { control: FormControl<string> }) {
+  const value = useControlValue(control);
+  return <span>{value.length} / 200</span>;
+}
+
+function MyForm() {
+  const form = useFormGroup({ bio: { value: '' } });
+
+  return (
+    <Form form={form} onSubmit={console.log}>
+      <input formControl="bio" />
+      <CharCount control={form.controls.bio} />
+    </Form>
+  );
 }
 ```
 
