@@ -37,28 +37,33 @@ const FormContext = createContext<AnyFormGroup | null>(null);
 
 // ─── wireChildren ─────────────────────────────────────────────────────────────
 
-function wireChildren(children: ReactNode, form: AnyFormGroup): ReactNode {
+const FIELD_TYPES = new Set(['input', 'textarea', 'select']);
+
+function wireChildren(
+  children: ReactNode,
+  form: AnyFormGroup,
+  wired: Set<string>,
+): ReactNode {
   return Children.map(children, (child) => {
     if (!isValidElement(child)) return child;
 
     const props = child.props as HTMLAttributes<HTMLElement> & {
-      formControl?: string;
+      name?: string;
       children?: ReactNode;
     };
 
-    if (props.formControl) {
-      const controlName = props.formControl;
-      const control = form.controls[controlName];
+    if (FIELD_TYPES.has(child.type as string) && props.name) {
+      const control = form.controls[props.name];
 
       if (!control) {
-        console.warn(`[Form] No control found for formControl="${controlName}"`);
+        console.warn(`[Form] No control found for name="${props.name}"`);
         return child;
       }
 
-      const { formControl: _fc, onChange, onBlur, ...rest } =
-        child.props as React.InputHTMLAttributes<HTMLInputElement> & {
-          formControl?: string;
-        };
+      wired.add(props.name);
+
+      const { onChange, onBlur, ...rest } =
+        child.props as React.InputHTMLAttributes<HTMLInputElement>;
 
       return cloneElement(
         child as React.ReactElement<Record<string, unknown>>,
@@ -82,7 +87,7 @@ function wireChildren(children: ReactNode, form: AnyFormGroup): ReactNode {
 
     if (props.children) {
       return cloneElement(child as React.ReactElement<{ children: ReactNode }>, {
-        children: wireChildren(props.children, form),
+        children: wireChildren(props.children, form, wired),
       });
     }
 
@@ -115,10 +120,19 @@ export function Form<V extends Record<string, unknown> = Record<string, unknown>
     onSubmit?.(form.getRawValue() as V);
   };
 
+  const wired = new Set<string>();
+  const wiredChildren = wireChildren(children, form, wired);
+
+  for (const key of Object.keys(form.controls)) {
+    if (!wired.has(key)) {
+      console.warn(`[Form] Control "${key}" is defined in the FormGroup but has no matching <input name="${key}"> in the form.`);
+    }
+  }
+
   return (
     <FormContext.Provider value={form}>
       <form onSubmit={handleSubmit} {...props}>
-        {wireChildren(children, form)}
+        {wiredChildren}
       </form>
     </FormContext.Provider>
   );

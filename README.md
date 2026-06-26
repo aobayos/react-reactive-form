@@ -1,13 +1,12 @@
 # react-reactive-forms
 
-A React form management library inspired by Angular's Reactive Forms. Define your form structure in TypeScript, attach it to JSX with a single `formControl` prop, and get real-time validation with full type inference — no boilerplate.
+A React form management library inspired by Angular's Reactive Forms. Define your form structure in TypeScript, attach it to JSX using the native `name` attribute, and get real-time validation with full type inference — no boilerplate.
 
 ---
 
 ## Table of Contents
 
 - [Installation](#installation)
-- [Setup](#setup)
 - [Quick Start](#quick-start)
 - [Core Concepts](#core-concepts)
 - [API Reference](#api-reference)
@@ -41,35 +40,6 @@ Requires React 18 or later as a peer dependency.
 
 ---
 
-## Setup
-
-Add a declaration file anywhere in your `src/` to enable the `formControl` prop on native HTML elements:
-
-```ts
-// src/formControl.d.ts
-import 'react';
-
-declare module 'react' {
-  interface HTMLAttributes<T> {
-    formControl?: string;
-  }
-}
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      input: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & { formControl?: string };
-      textarea: React.DetailedHTMLProps<React.TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> & { formControl?: string };
-      select: React.DetailedHTMLProps<React.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> & { formControl?: string };
-    }
-  }
-}
-```
-
-This is a one-time step per project. TypeScript will then accept `formControl` on any `<input>`, `<textarea>`, or `<select>` without complaints.
-
----
-
 ## Quick Start
 
 ```tsx
@@ -91,15 +61,15 @@ function RegisterForm() {
 
   return (
     <Form form={form} onSubmit={handleSubmit}>
-      <input formControl="username" type="text" placeholder="Username" />
+      <input name="username" type="text" placeholder="Username" />
 
-      <input formControl="email" type="email" placeholder="Email" />
+      <input name="email" type="email" placeholder="Email" />
       <FieldError field="email" />
 
-      <input formControl="password" type="password" placeholder="Password" />
+      <input name="password" type="password" placeholder="Password" />
       <FieldError field="password" />
 
-      <input formControl="confirmPassword" type="password" placeholder="Confirm password" />
+      <input name="confirmPassword" type="password" placeholder="Confirm password" />
       <FieldError field="confirmPassword" />
 
       <button type="submit" disabled={form.invalid}>Register</button>
@@ -427,7 +397,7 @@ Each failing validator adds a key to the control's `errors` object:
 
 ### `Form` component
 
-Wraps a native `<form>` and wires your `FormGroup` to the DOM. Any HTML element inside the form with a `formControl` prop will be automatically linked to the matching control by name.
+Wraps a native `<form>` and wires your `FormGroup` to the DOM. Any `<input>`, `<textarea>`, or `<select>` inside the form whose `name` matches a control key will be automatically linked to that control.
 
 ```tsx
 <Form form={form} onSubmit={handleSubmit} className="my-form">
@@ -443,9 +413,9 @@ Wraps a native `<form>` and wires your `FormGroup` to the DOM. Any HTML element 
 | `onSubmit` | `(values) => void` | Called on submit. Receives the form's current values. Always fires — gate it yourself via `disabled` on the submit button. |
 | `...rest` | `FormHTMLAttributes` | All standard `<form>` attributes |
 
-#### How `formControl` wiring works
+#### How `name` wiring works
 
-`<Form>` walks its children recursively. When it finds an element with a `formControl` prop matching a control name, it injects:
+`<Form>` walks its children recursively. When it finds an `<input>`, `<textarea>`, or `<select>` whose `name` matches a control in the group, it injects:
 
 - `value` — from the control's current value
 - `onChange` — calls `control.setValue(e.target.value)` and marks dirty
@@ -455,6 +425,10 @@ Wraps a native `<form>` and wires your `FormGroup` to the DOM. Any HTML element 
 - `data-dirty` — `"true"` or `"false"`
 
 Your own `onChange` / `onBlur` handlers are preserved and called after the library's.
+
+Two dev-time warnings help catch mismatches:
+- A named field element whose `name` has no matching control in the group logs `[Form] No control found for name="..."`.
+- A control defined in the group with no matching field element in the JSX logs `[Form] Control "..." is defined in the FormGroup but has no matching <input name="...">`.
 
 #### Controlling submission
 
@@ -521,7 +495,7 @@ function MyForm() {
   const form = useFormGroup({ email: { value: '' } });
   return (
     <Form form={form}>
-      <input formControl="email" />
+      <input name="email" />
       <SubmitStatus />
     </Form>
   );
@@ -588,7 +562,7 @@ function MyForm() {
 
   return (
     <Form form={form} onSubmit={console.log}>
-      <input formControl="bio" />
+      <input name="bio" />
       <CharCount control={form.controls.bio} />
     </Form>
   );
