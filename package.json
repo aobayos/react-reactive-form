@@ -3,7 +3,27 @@
 	"version": "0.1.0",
 	"type": "module",
 	"description": "Simple library to handle reactive forms for React apps, inspired by Angular Forms",
+	"keywords": [
+		"react",
+		"forms",
+		"reactive-forms",
+		"form-validation",
+		"form-management",
+		"hooks",
+		"typescript"
+	],
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aobayos/react-reactive-form.git"
+	},
+	"homepage": "https://github.com/aobayos/react-reactive-form#readme",
+	"bugs": {
+		"url": "https://github.com/aobayos/react-reactive-form/issues"
+	},
+	"engines": {
+		"node": ">=20"
+	},
 	"main": "./dist/index.umd.cjs",
 	"module": "./dist/index.js",
 	"types": "./dist/src/index.d.ts",
