@@ -1,4 +1,4 @@
-# @aobayos/react-reactive-forms
+# react-reactive-forms
 
 A React form management library inspired by Angular's Reactive Forms. Define your form structure in TypeScript, attach it to JSX with a single `formControl` prop, and get real-time validation with full type inference — no boilerplate.
 
@@ -33,7 +33,7 @@ A React form management library inspired by Angular's Reactive Forms. Define you
 ## Installation
 
 ```bash
-npm install @aobayos/react-reactive-forms
+npm install react-reactive-forms
 ```
 
 Requires React 18 or later as a peer dependency.
@@ -72,7 +72,7 @@ This is a one-time step per project. TypeScript will then accept `formControl` o
 ## Quick Start
 
 ```tsx
-import { useFormGroup, Form, FieldError, Validators } from '@aobayos/react-reactive-forms';
+import { useFormGroup, Form, FieldError, Validators } from 'react-reactive-forms';
 
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
@@ -343,7 +343,7 @@ array.getRawValue()       // includes disabled controls
 A factory class for creating groups, controls, and arrays. Useful for building forms programmatically.
 
 ```ts
-import { FormBuilder, Validators } from '@aobayos/react-reactive-forms';
+import { FormBuilder, Validators } from 'react-reactive-forms';
 
 const fb = new FormBuilder();
 
@@ -592,7 +592,7 @@ See [Dynamic Forms with FormArray](#dynamic-forms-with-formarray) for a full exa
 A validator is any function that accepts an `AbstractControlLike` and returns `ValidationErrors | null`.
 
 ```ts
-import type { ValidatorFn } from '@aobayos/react-reactive-forms';
+import type { ValidatorFn } from 'react-reactive-forms';
 
 const noSpaces: ValidatorFn = (control) => {
   if (typeof control.value === 'string' && control.value.includes(' ')) {
@@ -638,7 +638,7 @@ To show a custom error message, read `control.errors` directly instead of using 
 Async validators return a `Promise<ValidationErrors | null>`. The control's status becomes `'PENDING'` while they run.
 
 ```ts
-import type { AsyncValidatorFn } from '@aobayos/react-reactive-forms';
+import type { AsyncValidatorFn } from 'react-reactive-forms';
 
 const uniqueUsername: AsyncValidatorFn = async (control) => {
   const taken = await checkUsernameAvailability(control.value as string);
@@ -698,7 +698,7 @@ import {
   FormControl,
   Validators,
   Form,
-} from '@aobayos/react-reactive-forms';
+} from 'react-reactive-forms';
 
 function EmailListForm() {
   const emails = useFormArray([
